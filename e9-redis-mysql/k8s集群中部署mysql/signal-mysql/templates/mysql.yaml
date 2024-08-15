@@ -1,0 +1,149 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: mysql-{{ .Release.Name }}
+  name: mysql-{{ .Release.Name }}
+spec:
+  serviceName: "mysql"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mysql-{{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: mysql-{{ .Release.Name }}
+    spec:
+      containers:
+      - image: {{ .Values.Img }}
+        name: mysql
+        resources:
+          requests:
+            cpu: 12m
+          limits:
+            cpu: 1000m #限1核cpu，可以做性能测试
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value:  "{{ .Values.rootpasswd }}"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysqlvolume
+          mountPath: /var/lib/mysql
+          subPath: mysqldata
+        - name: my-cnf
+          mountPath: /etc/my.cnf
+          subPath: my.cnf
+        - mountPath: /docker-entrypoint-initdb.d
+          name: mysqlinit
+      volumes:
+        - name: my-cnf
+          configMap:
+            name: my-cnf-{{ .Release.Name }}
+        - configMap:
+            name: mysqlinit-{{ .Release.Name }}
+          name: mysqlinit
+  volumeClaimTemplates:
+  - metadata:
+      name: mysqlvolume
+    spec:
+      storageClassName: {{ .Values.storage.classname }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  clusterIP: None
+  selector:
+    app: mysql-{{ .Release.Name }}
+---
+{{ if .Values.nodeport.flag -}}
+#定义mysql的Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: n-mysql
+  name: n-mysql
+spec:
+  selector:
+    app: mysql-{{ .Release.Name }}
+  type: NodePort
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+    nodePort: 30306
+{{ end -}}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: my-cnf-{{ .Release.Name }}
+  name: my-cnf-{{ .Release.Name }}
+data:
+  my.cnf: |
+    [mysqld]
+    skip-host-cache
+    skip-name-resolve
+    datadir=/var/lib/mysql
+    socket=/var/run/mysqld/mysqld.sock
+    secure-file-priv=/var/lib/mysql-files
+    user=mysql
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_unicode_ci
+
+    log-bin=/var/lib/mysql/mysql-bin
+    server-id=1
+    symbolic-links=0
+    pid-file=/var/run/mysqld/mysqld.pid
+
+    [client]
+    default-character-set = utf8mb4
+    socket=/var/run/mysqld/mysqld.sock
+
+    [mysql]
+    default-character-set = utf8mb4
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: mysql-{{ .Release.Name }}
+  name: mysqlinit-{{ .Release.Name }}
+data: # 配置自动创建数据库
+  initdb.sql: |
+    create database if not exists mydb1;
+    create database if not exists demo;
+    # use mydb1;
+    # -- 创建表
+    # CREATE TABLE users (
+    #     id INT PRIMARY KEY,
+    #     username VARCHAR(50) NOT NULL,
+    #     email VARCHAR(100) NOT NULL
+    # );
+    # -- 插入数据
+    # INSERT INTO users (id, username, email)
+    # VALUES
+    #     (1, 'john_doe', 'john@example.com'),
+    #     (2, 'jane_smith', 'jane@example.com'),
+    #     (3, 'bob_jones', 'bob@example.com');
+
+

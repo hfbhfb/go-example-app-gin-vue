@@ -1,0 +1,11 @@
+
+
+replicaCount: 1
+Img: "swr.cn-north-4.myhuaweicloud.com/hfbbg4/redis:7.0.9"
+
+rootpasswd: "123456"
+
+
+storage:
+  classname: "mylocalsc1" # "mylocalsc1" # csi-disk-topology
+  size: "5Gi"

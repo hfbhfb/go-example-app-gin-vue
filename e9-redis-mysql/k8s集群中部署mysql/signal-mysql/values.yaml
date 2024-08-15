@@ -1,0 +1,16 @@
+# Default values for signal-mysql.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+Img: "swr.cn-north-4.myhuaweicloud.com/hfbbg4/mysq:5.7.41"
+
+rootpasswd: "123456"
+
+storage:
+  classname: "mylocalsc1" # csi-disk-topology
+  size: "5Gi"
+
+
+nodeport:
+  flag: false

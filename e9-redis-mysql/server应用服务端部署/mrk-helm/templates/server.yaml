@@ -1,0 +1,101 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mr-server-redis-mysql
+  name: mr-server-redis-mysql
+spec:
+  replicas: {{ .Values.replicas }} 
+  selector:
+    matchLabels:
+      app: mr-server-redis-mysql
+  template:
+    metadata:
+      labels:
+        app: mr-server-redis-mysql
+    spec:
+      containers:
+      - name: mr-server-redis-mysql
+        image: {{ .Values.IMG }} # swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1 #nginx:1.25-bullseye-perl #这个镜像有ps命令
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: config-volume
+            mountPath: /root/config
+            subPath: config
+      serviceAccountName: sa-mr-server-redis-mysql
+      volumes:
+      - name: config-volume
+        configMap:
+          name: cm-server-redis-mysql
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mr-server-redis-mysql
+  name: mr-server-redis-mysql
+spec:
+  ports:
+  - name: service0
+    port: 8080                 # 访问Service的端口
+    protocol: TCP           # 访问Service的协议，支持TCP和UDP
+    targetPort: 8080           # Service访问目标容器的端口，本例中nginx镜像默认使用80端口
+    nodePort: {{ .Values.nodePort }} #30711
+  selector:                  # 标签选择器，Service通过标签选择Pod，将访问Service的流量转发给Pod
+    app: mr-server-redis-mysql
+  type: NodePort            # Service的类型，ClusterIP表示在集群内访问
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: myrolebinding-{{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: sa-mr-server-redis-mysql
+  namespace: {{ .Release.Namespace }}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-mr-server-redis-mysql
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: server-redis-mysql
+  name: cm-server-redis-mysql
+data:
+  config: |
+    server:
+      port: {{ .Values.server.port }}
+      debug: {{ .Values.server.debug }}
+
+    redis:
+      host: {{ .Values.redis.host }} # 同命名空间
+      port: {{ .Values.redis.port }}
+      password: {{ .Values.redis.password }}
+
+    mysql:
+      host: {{ .Values.mysql.host }} # 同命名空间
+      port: {{ .Values.mysql.port }} 
+      username: {{ .Values.mysql.username }} 
+      password: {{ .Values.mysql.password }} 
+      database: {{ .Values.mysql.database }} 
+
+    kubernetes:
+      # type in or out cluster type
+      type: {{ .Values.kubernetes.type }} 
+      # type out need kubeconfig path
+      config: {{ .Values.kubernetes.config }} 

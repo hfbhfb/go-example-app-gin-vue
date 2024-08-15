@@ -1,0 +1,83 @@
+
+# 定义redis的Deployment
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: redis
+  name: redis
+spec:
+  serviceName: "redis"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis:7.0.9
+        name: redis
+        command: ["redis-server"]
+        args: ["/etc/redis/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redisvolume
+          mountPath: /data
+        - name: configvolume
+          mountPath: /etc/redis/redis.conf
+          subPath: redis.conf
+      volumes:
+      - name: configvolume
+        # 使用pvc
+        configMap:
+          name: redis-conf
+  volumeClaimTemplates:
+  - metadata:
+      name: redisvolume
+    spec:
+      storageClassName: mylocalsc1
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 20Gi
+---
+#定义redis的Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: svc-redis
+  name: svc-redis
+spec:
+  selector:
+    app: redis
+  type: NodePort
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+    nodePort: 30379
+
+--- 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-conf
+data:
+  redis.conf: |
+    bind 0.0.0.0
+    port 6379
+    #requirepass 123456
+    pidfile .pid
+    appendonly yes
+    cluster-config-file nodes-6379.conf
+    #pidfile /data/middleware-data/redis/log/redis-6379.pid
+    #cluster-config-file /data/middleware-data/redis/conf/redis.conf
+    #dir /data/middleware-data/redis/data/
+    #logfile "/data/middleware-data/redis/log/redis-6379.log"
+    cluster-node-timeout 5000
+    protected-mode no

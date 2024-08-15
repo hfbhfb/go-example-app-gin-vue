@@ -1,0 +1,10 @@
+
+
+rootpasswd: "123456"
+
+
+storage:
+  classname: "csi-disk-topology" # "mylocalsc1" # csi-disk-topology
+  size: "5Gi"
+
+  

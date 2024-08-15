@@ -1,0 +1,100 @@
+---
+# Source: mrk-helm/templates/server.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-mr-server-redis-mysql
+---
+# Source: mrk-helm/templates/server.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: server-redis-mysql
+  name: cm-server-redis-mysql
+data:
+  config: |
+    server:
+      port: 8080
+      debug: true
+
+    redis:
+      host: svc-redis # 同命名空间
+      port: 6379
+      password: 
+
+    mysql:
+      host: mysql # 同命名空间
+      port: 3306 
+      username: root 
+      password: 123456 
+      database: demo 
+
+    kubernetes:
+      # type in or out cluster type
+      type: in 
+      # type out need kubeconfig path
+      config: /root/.kube/config
+---
+# Source: mrk-helm/templates/server.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: myrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: sa-mr-server-redis-mysql
+  namespace: hwx1166232
+---
+# Source: mrk-helm/templates/server.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mr-server-redis-mysql
+  name: mr-server-redis-mysql
+spec:
+  ports:
+  - name: service0
+    port: 8080                 # 访问Service的端口
+    protocol: TCP           # 访问Service的协议，支持TCP和UDP
+    targetPort: 8080           # Service访问目标容器的端口，本例中nginx镜像默认使用80端口
+    nodePort: 30711
+  selector:                  # 标签选择器，Service通过标签选择Pod，将访问Service的流量转发给Pod
+    app: mr-server-redis-mysql
+  type: NodePort            # Service的类型，ClusterIP表示在集群内访问
+---
+# Source: mrk-helm/templates/server.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mr-server-redis-mysql
+  name: mr-server-redis-mysql
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: mr-server-redis-mysql
+  template:
+    metadata:
+      labels:
+        app: mr-server-redis-mysql
+    spec:
+      containers:
+      - name: mr-server-redis-mysql
+        image: swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1 # swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1 #nginx:1.25-bullseye-perl #这个镜像有ps命令
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: config-volume
+            mountPath: /root
+            subPath: config
+      serviceAccountName: sa-mr-server-redis-mysql
+      volumes:
+      - name: config-volume
+        configMap:
+          name: cm-server-redis-mysql

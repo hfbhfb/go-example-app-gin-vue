@@ -1,0 +1,29 @@
+
+
+
+IMG: swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1
+nodePort: 0 #30711
+
+
+# config info
+server:
+  port: 8080
+  debug: true
+
+redis:
+  host: svc-redis # 同命名空间
+  port: 6379
+  password: ""
+
+mysql:
+  host: mysql # 同命名空间
+  port: 3306
+  username: root
+  password: "123456"
+  database: demo
+
+kubernetes:
+  # type in or out cluster type
+  type: in
+  # type out need kubeconfig path
+  config: /root/.kube/config

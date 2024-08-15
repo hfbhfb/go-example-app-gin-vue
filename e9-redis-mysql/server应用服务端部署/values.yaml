@@ -1,0 +1,8 @@
+
+
+replicas: 1
+IMG: swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1
+
+
+
+
