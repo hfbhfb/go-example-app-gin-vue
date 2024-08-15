@@ -3,19 +3,23 @@ server:
   debug: true
 
 redis:
-  host: 127.0.0.1
-  port: 6379
-  password: 123456
+  host: 192.168.113.249
+  port: 30379
+  # host: 127.0.0.1
+  # port: 6379
+  password: 
 
 mysql:
-  host: 127.0.0.1
-  port: 3306
+  host: 192.168.113.249
+  port: 30306
+  # host: 127.0.0.1
+  # port: 3306
   username: root
-  password: 123456
-  database: demo
+  password: "123456"
+  database: "demo"
 
 kubernetes:
   # type in or out cluster type
   type: out
   # type out need kubeconfig path
-  config: /Users/houshiying/.kube/config
+  config: C:\Users\hefabao\.kube\config

@@ -1,0 +1,98 @@
+
+npm verbose cwd D:\tmp\go-example-app-gin-vue\website
+npm verbose Windows_NT 10.0.22631
+npm verbose node v20.15.0
+npm verbose npm  v10.7.0
+npm error code 1
+npm error path D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c node scripts/build.js
+npm error Building: D:\work2\nodejs2015\node.exe D:\tmp\go-example-app-gin-vue\website\node_modules\node-gyp\bin\node-gyp.js rebuild --verbose --libsass_ext= --libsass_cflags= --libsass_ldflags= --libsass_library=
+npm error gyp info it worked if it ends with ok
+npm error gyp verb cli [
+npm error gyp verb cli   'D:\\work2\\nodejs2015\\node.exe',
+npm error gyp verb cli   'D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-gyp\\bin\\node-gyp.js',
+npm error gyp verb cli   'rebuild',
+npm error gyp verb cli   '--verbose',
+npm error gyp verb cli   '--libsass_ext=',
+npm error gyp verb cli   '--libsass_cflags=',
+npm error gyp verb cli   '--libsass_ldflags=',
+npm error gyp verb cli   '--libsass_library='
+npm error gyp verb cli ]
+npm error gyp info using node-gyp@3.8.0
+npm error gyp info using node@20.15.0 | win32 | x64
+npm error gyp verb command rebuild []
+npm error gyp verb command clean []
+npm error gyp verb clean removing "build" directory
+npm error gyp verb command configure []
+npm error gyp verb check python checking for Python executable "python2" in the PATH    
+npm error gyp verb `which` succeeded python2 D:\work3\Python27\python2.EXE
+npm error gyp verb check python version `D:\work3\Python27\python2.EXE -c "import sys; print "2.7.2
+npm error gyp verb check python version .%s.%s" % sys.version_info[:3];"` returned: %j  
+npm error gyp verb get node dir no --target version specified, falling back to host node version: 20.15.0
+npm error gyp verb command install [ '20.15.0' ]
+npm error gyp verb install input version string "20.15.0"
+npm error gyp verb install installing version: 20.15.0
+npm error gyp verb install --ensure was passed, so won't reinstall if already installed 
+npm error gyp verb install version is already installed, need to check "installVersion" 
+npm error gyp verb got "installVersion" 9
+npm error gyp verb needs "installVersion" 9
+npm error gyp verb install version is good
+npm error gyp verb get node dir target node version installed: 20.15.0
+npm error gyp verb build dir attempting to create "build" dir: D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass\build
+npm error gyp verb build dir "build" dir needed to be created? D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass\build
+npm error gyp verb find vs2017 Found installation at: D:\studio2022\ide
+npm error gyp verb find vs2017   - Found Microsoft.VisualStudio.Component.VC.Tools.x86.x64
+npm error gyp verb find vs2017   - Missing Visual Studio C++ core features (Microsoft.VisualStudio.VC.MSBuild.Base)
+npm error gyp verb find vs2017   - Missing a Windows SDK (Microsoft.VisualStudio.Component.Windows10SDK.* or Microsoft.VisualStudio.Component.Windows81SDK)
+npm error gyp verb find vs2017   - Some required components are missing, not using this installation
+npm error gyp verb Not using VS2017: No usable installation of VS2017 found
+npm error gyp verb build/config.gypi creating config file
+npm error gyp verb build/config.gypi writing out config file: D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass\build\config.gypi
+npm error gyp verb config.gypi checking for gypi file: D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass\config.gypi
+npm error gyp verb common.gypi checking for gypi file: D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass\common.gypi
+npm error gyp verb gyp gyp format was not specified; forcing "msvs"
+npm error gyp info spawn D:\work3\Python27\python2.EXE
+npm error gyp info spawn args [
+npm error gyp info spawn args   'D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-gyp\\gyp\\gyp_main.py',
+npm error gyp info spawn args   'binding.gyp',
+npm error gyp info spawn args   '-f',
+npm error gyp info spawn args   'msvs',
+npm error gyp info spawn args   '-G',
+npm error gyp info spawn args   'msvs_version=auto',
+npm error gyp info spawn args   '-I',
+npm error gyp info spawn args   'D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-sass\\build\\config.gypi',
+npm error gyp info spawn args   '-I',
+npm error gyp info spawn args   'D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-gyp\\addon.gypi',
+npm error gyp info spawn args   '-I',
+npm error gyp info spawn args   'C:\\Users\\hefabao\\.node-gyp\\20.15.0\\include\\node\\common.gypi',
+npm error gyp info spawn args   '-Dlibrary=shared_library',
+npm error gyp info spawn args   '-Dvisibility=default',
+npm error gyp info spawn args   '-Dnode_root_dir=C:\\Users\\hefabao\\.node-gyp\\20.15.0',
+npm error gyp info spawn args   '-Dnode_gyp_dir=D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-gyp',
+npm error gyp info spawn args   '-Dnode_lib_file=C:\\Users\\hefabao\\.node-gyp\\20.15.0\\<(target_arch)\\node.lib',
+npm error gyp info spawn args   '-Dmodule_root_dir=D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-sass',
+npm error gyp info spawn args   '-Dnode_engine=v8',
+npm error gyp info spawn args   '--depth=.',
+npm error gyp info spawn args   '--no-parallel',
+npm error gyp info spawn args   '--generator-output',
+npm error gyp info spawn args   'D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-sass\\build',
+npm error gyp info spawn args   '-Goutput_dir=.'
+npm error gyp info spawn args ]
+npm error gyp: Undefined variable standalone_static_library in binding.gyp while trying to load binding.gyp
+npm error gyp ERR! configure error
+npm error gyp ERR! stack Error: `gyp` failed with exit code: 1
+npm error gyp ERR! stack     at ChildProcess.onCpExit (D:\tmp\go-example-app-gin-vue\website\site\node_modules\node-gyp\lib\configure.js:345:16)
+npm error gyp ERR! stack     at ChildProcess.emit (node:events:519:28)
+npm error gyp ERR! stack     at ChildProcess._handle.onexit (node:internal/child_process:294:12)
+npm error gyp ERR! System Windows_NT 10.0.22631
+npm error gyp ERR! command "D:\\work2\\nodejs2015\\node.exe" "D:\\tmp\\go-example-app-gin-vue\\website\\node_modules\\node-gyp\\bin\\node-gyp.js" "rebuild" "--verbose" "--libsass_ext=" "--libsass_cflags=" "--libsass_ldflags=" "--libsass_library="
+npm error gyp ERR! cwd D:\tmp\go-example-app-gin-vue\website\node_modules\node-sass
+npm error gyp ERR! node -v v20.15.0
+npm error gyp ERR! node-gyp -v v3.8.0
+npm error gyp ERR! not ok
+npm error Build failed with error code: 1
+npm verbose exit 1
+npm verbose code 1
+
+npm error A complete log of this run can be found in: C:\Users\hefabao\AppData\Local\npm-cache\_logs\2024-07-29T03_32_53_252Z-debug-0.log

@@ -2,21 +2,24 @@ package server
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	clusterv1 "github.com/kuops/go-example-app/server/pkg/apis/cluster/v1"
 	menuv1 "github.com/kuops/go-example-app/server/pkg/apis/menu/v1"
 	"github.com/kuops/go-example-app/server/pkg/apis/metrics"
 	rolev1 "github.com/kuops/go-example-app/server/pkg/apis/role/v1"
 	userv1 "github.com/kuops/go-example-app/server/pkg/apis/user/v1"
-	clusterv1 "github.com/kuops/go-example-app/server/pkg/apis/cluster/v1"
 	"github.com/kuops/go-example-app/server/pkg/casbin"
 	"github.com/kuops/go-example-app/server/pkg/config"
 	dbinit "github.com/kuops/go-example-app/server/pkg/db/initialize"
 	"github.com/kuops/go-example-app/server/pkg/log"
 	"github.com/kuops/go-example-app/server/pkg/middleware/auth"
+	casbinmw "github.com/kuops/go-example-app/server/pkg/middleware/casbin"
 	"github.com/kuops/go-example-app/server/pkg/middleware/cors"
 	"github.com/kuops/go-example-app/server/pkg/middleware/logger"
 	"github.com/kuops/go-example-app/server/pkg/middleware/prometheus"
-	casbinmw "github.com/kuops/go-example-app/server/pkg/middleware/casbin"
 	"github.com/kuops/go-example-app/server/pkg/store/mysql"
 	"github.com/kuops/go-example-app/server/pkg/store/redis"
 	"github.com/kuops/go-example-app/server/pkg/utils/ip"
@@ -24,18 +27,17 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
-	"net/http"
 )
 
 type Server struct {
-	Server       *http.Server
-	ServerConfig *config.ServerConfig
-	MySQLClient  *mysql.Client
-	MySQLConfig  *config.MySQLConfig
-	RedisClient  redis.Interface
-	Casbin     *casbin.Casbin
+	Server              *http.Server
+	ServerConfig        *config.ServerConfig
+	MySQLClient         *mysql.Client
+	MySQLConfig         *config.MySQLConfig
+	RedisClient         redis.Interface
+	Casbin              *casbin.Casbin
 	KubernetesClientSet *kubernetes.Clientset
-	KubernetesDynamic  dynamic.Interface
+	KubernetesDynamic   dynamic.Interface
 }
 
 func (s *Server) PrepareRun() error {
@@ -83,7 +85,7 @@ func (s *Server) installRouters() {
 		"/metrics",
 	}
 
-	skipCasbinUri := []string {
+	skipCasbinUri := []string{
 		"/api/v1/user/login",
 		"/api/v1/user/logout",
 		"/swagger",
@@ -97,17 +99,18 @@ func (s *Server) installRouters() {
 		"/api/v1/role/rolemenuidlist",
 	}
 
-	middlewares := []gin.HandlerFunc {
+	middlewares := []gin.HandlerFunc{
 		logger.GinLogger(),
 		logger.GinRecovery(),
 		cors.Middleware(),
-		auth.Middleware(s.RedisClient,skipAuthUri),
+		auth.Middleware(s.RedisClient, skipAuthUri),
 		prometheus.PromMiddleware(&prometheus.PromOpts{}),
-		casbinmw.Middleware(skipCasbinUri,s.Casbin.Enforcer),
+		casbinmw.Middleware(skipCasbinUri, s.Casbin.Enforcer),
 	}
 
-	router.Use(middlewares...)
+	router.Use(static.Serve("/", static.LocalFile("./dist", true)))
 
+	router.Use(middlewares...)
 
 	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
@@ -116,16 +119,16 @@ func (s *Server) installRouters() {
 	apiv1Group := router.Group("api/v1")
 
 	metrics.Register(rootGroup)
-	userv1.Register(apiv1Group, s.MySQLClient,s.RedisClient,s.Casbin.Enforcer)
-	menuv1.Register(apiv1Group, s.MySQLClient,s.RedisClient,s.Casbin.Enforcer)
-	rolev1.Register(apiv1Group, s.MySQLClient,s.RedisClient,s.Casbin.Enforcer)
-	clusterv1.Register(apiv1Group, s.MySQLClient,s.RedisClient,s.Casbin.Enforcer,s.KubernetesClientSet,s.KubernetesDynamic)
+	userv1.Register(apiv1Group, s.MySQLClient, s.RedisClient, s.Casbin.Enforcer)
+	menuv1.Register(apiv1Group, s.MySQLClient, s.RedisClient, s.Casbin.Enforcer)
+	rolev1.Register(apiv1Group, s.MySQLClient, s.RedisClient, s.Casbin.Enforcer)
+	clusterv1.Register(apiv1Group, s.MySQLClient, s.RedisClient, s.Casbin.Enforcer, s.KubernetesClientSet, s.KubernetesDynamic)
 
 	s.Server.Handler = router
 	log.Info("注册路由成功...")
 }
 
-func (s *Server)setMode()  {
+func (s *Server) setMode() {
 	if s.ServerConfig.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -133,17 +136,17 @@ func (s *Server)setMode()  {
 	}
 }
 
-func (s *Server)Migration() {
+func (s *Server) Migration() {
 	log.Info("初始化数据库表结构....")
 	dbinit.Migration(s.MySQLClient)
 }
 
-func (s *Server)InitialDatas()  {
+func (s *Server) InitialDatas() {
 	log.Info("初始化数据库系统数据...")
 	dbinit.InitialDatas(s.MySQLClient)
 }
 
-func (s *Server)InitCsbinEnforcer()  {
+func (s *Server) InitCsbinEnforcer() {
 	log.Info("初始化权限系统...")
-	s.Casbin.InitCsbinEnforcer(s.MySQLConfig,s.MySQLClient)
+	s.Casbin.InitCsbinEnforcer(s.MySQLConfig, s.MySQLClient)
 }

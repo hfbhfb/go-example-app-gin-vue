@@ -19,3 +19,8 @@
 
 # logs
 logs/
+
+server/dist/
+mysql/
+redis/
+tmpdata2/

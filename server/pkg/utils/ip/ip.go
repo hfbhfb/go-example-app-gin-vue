@@ -1,8 +1,9 @@
 package ip
 
 import (
-	"github.com/kuops/go-example-app/server/pkg/log"
 	"net"
+
+	"github.com/kuops/go-example-app/server/pkg/log"
 )
 
 func GetIPAddress() string {
@@ -10,6 +11,7 @@ func GetIPAddress() string {
 	conn, err := net.Dial("udp", "8.8.8.8:53")
 	if err != nil {
 		log.Error("get ip address failed")
+		return "127.0.0.1"
 	}
 
 	defer conn.Close()

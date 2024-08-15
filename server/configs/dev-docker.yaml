@@ -3,19 +3,19 @@ server:
   debug: true
 
 redis:
-  host: 172.31.0.103
+  host: svc-redis # 同命名空间
   port: 6379
-  password: 123456
+  password: ""
 
 mysql:
-  host: 172.31.0.102
+  host: mysql # 同命名空间
   port: 3306
   username: root
-  password: 123456
+  password: "123456"
   database: demo
 
 kubernetes:
   # type in or out cluster type
-  type: out
+  type: in
   # type out need kubeconfig path
   config: /root/.kube/config

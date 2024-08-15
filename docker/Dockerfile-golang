@@ -1,15 +1,18 @@
-FROM golang:1.15.6
+FROM golang:1.20.12-bullseye-apt-hw-vim as builder
 ENV GO111MODULE=on
-ENV GOPROXY=https://goproxy.io,https://goproxy.cn,direct
+ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /go/src/github.com/kuops/go-example-app
-COPY server ./server
 COPY go.mod go.sum ./
+RUN go mod download
+COPY server ./server
 RUN ls -al && pwd
 RUN cd server/ && go build -o app .
 
-FROM centos:7
+# FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/myalpinetest:curl
+FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/centos:centos7.6.1810
 WORKDIR /root/
-COPY --from=0 /go/src/github.com/kuops/go-example-app/server/app .
-COPY --from=0 /go/src/github.com/kuops/go-example-app/server/configs/dev-docker.yaml config.yaml
+COPY --from=builder /go/src/github.com/kuops/go-example-app/server/app .
+COPY --from=builder /go/src/github.com/kuops/go-example-app/server/dist ./dist
+COPY --from=builder /go/src/github.com/kuops/go-example-app/server/configs/dev-docker.yaml config.yaml
 RUN ls -al
-CMD ["./app","--config","config.yaml"]
+CMD ["/root/app","--config","config.yaml"]
