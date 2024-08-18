@@ -6,10 +6,11 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY server ./server
 RUN ls -al && pwd
-RUN cd server/ && go build -o app .
+#RUN cd server/ && CGO_ENABLED=1 go build -o app .
+RUN cd server/ && CGO_ENABLED=0 go build -o app .
 
-# FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/myalpinetest:curl
-FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/centos:centos7.6.1810
+FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/myalpinetest:curl
+#FROM swr.cn-north-4.myhuaweicloud.com/hfbbg4/centos:centos7.6.1810
 WORKDIR /root/
 COPY --from=builder /go/src/github.com/kuops/go-example-app/server/app .
 COPY --from=builder /go/src/github.com/kuops/go-example-app/server/dist ./dist

@@ -3,7 +3,8 @@
 
 
 helmAppName ?= mrk1 # mrk-helm 是指 mysql redis kubernetes
-NS ?= hwx1166232-a
+# NS ?= hwx1166232-a
+NS ?= hwx1166232
 
 
 template:
@@ -17,5 +18,7 @@ uninstall:
 	helm uninstall ${helmAppName} --namespace ${NS} 
 
 
-
+get:
+	kubectl get po -n ${NS}
+	kubectl get deploy -n ${NS}
 

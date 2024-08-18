@@ -40,7 +40,7 @@ data:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: myrolebinding
+  name: myrolebinding-hwx1166232
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -63,7 +63,7 @@ spec:
     port: 8080                 # 访问Service的端口
     protocol: TCP           # 访问Service的协议，支持TCP和UDP
     targetPort: 8080           # Service访问目标容器的端口，本例中nginx镜像默认使用80端口
-    nodePort: 30711
+    nodePort: 0 #30711
   selector:                  # 标签选择器，Service通过标签选择Pod，将访问Service的流量转发给Pod
     app: mr-server-redis-mysql
   type: NodePort            # Service的类型，ClusterIP表示在集群内访问
@@ -91,7 +91,7 @@ spec:
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - name: config-volume
-            mountPath: /root
+            mountPath: /root/config
             subPath: config
       serviceAccountName: sa-mr-server-redis-mysql
       volumes:

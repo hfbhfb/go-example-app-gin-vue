@@ -27,9 +27,9 @@ docker push swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1
 docker history swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1 --no-trunc
 
 
-docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "pwd;ls; "
+docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "pwd;ls -lh; "
 docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "pwd;ls dist; "
-docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "/root/app --config config.yaml"
+docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "pwd;ls;./app --config config.yaml"
 docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "ls -lh /root/ ; cat config.yaml"
 
 

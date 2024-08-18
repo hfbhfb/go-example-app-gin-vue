@@ -9,7 +9,7 @@ git config --global url."https://".insteadOf git://
   - cd website;npm install;npm run build:prod;cp -rf dist ../server/
 
 - 在k8s安装部署
- - cd yamls-in-k8s/server ; make install
+ - cd e9-redis-mysql/server应用服务端部署 ; make install
  - 查看配置文件： docker run -it swr.cn-north-4.myhuaweicloud.com/hfbbg4/mr-server:v0.1  sh -c "ls -lh /root/ ; cat config.yaml"
 
 
